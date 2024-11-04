@@ -4,9 +4,50 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Meine GitHub-Seite</title>
+    <style>
+        /* Füge ein bisschen Stil hinzu */
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        #content {
+            display: none; /* Standardmäßig versteckt */
+        }
+        #fallback {
+            display: block; /* Standardmäßig sichtbar */
+        }
+    </style>
 </head>
 <body>
-    <h1>Willkommen auf meiner GitHub-Seite!</h1>
-    <p>Dies ist eine einfache Webseite, die mit GitHub Pages gehostet wird.</p>
+
+<h1>Willkommen auf meiner GitHub-Seite!</h1>
+
+<div id="content">
+    <iframe src="http://important-sir.gl.at.ply.gg:31990" width="100%" height="600px" frameborder="0" onload="checkIframe()"></iframe>
+</div>
+
+<div id="fallback">
+    <p>Die Zielseite ist derzeit offline oder nicht verfügbar. Hier ist ein Alternativinhalt, den du anpassen kannst.</p>
+    <!-- Füge hier den gewünschten Alternativinhalt hinzu -->
+</div>
+
+<script>
+    function checkIframe() {
+        const iframe = document.querySelector('iframe');
+        iframe.onload = function() {
+            const iframeDocument = iframe.contentDocument || iframe.contentWindow.document;
+            const isPageLoaded = iframeDocument.body && iframeDocument.body.childNodes.length > 0;
+
+            if (isPageLoaded) {
+                document.getElementById('content').style.display = 'block'; // Zeige iFrame
+                document.getElementById('fallback').style.display = 'none'; // Verstecke Alternativinhalt
+            } else {
+                document.getElementById('content').style.display = 'none'; // Verstecke iFrame
+                document.getElementById('fallback').style.display = 'block'; // Zeige Alternativinhalt
+            }
+        };
+    }
+</script>
+
 </body>
 </html>
