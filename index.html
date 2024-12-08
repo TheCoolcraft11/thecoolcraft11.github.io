@@ -4,52 +4,81 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Tetris</title>
     <style>
         body {
+            margin: 0;
+            padding: 0;
             display: flex;
             flex-direction: column;
-            justify-content: center;
             align-items: center;
+            justify-content: flex-start;
             height: 100vh;
-            margin: 0;
             background-color: #1a1a1a;
             color: #f0f0f0;
             font-family: Arial, sans-serif;
+            overflow: hidden;
+        }
+
+        #score,
+        #level,
+        #highscore {
+            font-size: 2em;
+            margin: 5px;
+        }
+
+        #message {
+            margin: 10px;
+            font-size: 1.5em;
         }
 
         canvas {
             border: 2px solid #f0f0f0;
             background-color: #333;
+            display: block;
+            margin-top: 20px;
+            max-width: 100%;
+            max-height: 70vh;
         }
 
-        #score {
-            font-size: 2em;
-            margin-bottom: 10px;
+        @media (max-width: 768px) {
+
+            #score,
+            #level,
+            #highscore {
+                font-size: 1.5em;
+            }
+
+            #message {
+                font-size: 1.2em;
+            }
         }
 
-        #level {
-            font-size: 1.5em;
-            margin-bottom: 10px;
-        }
+        @media (max-width: 480px) {
 
-        #message {
-            margin-bottom: 10px;
-            font-size: 1.5em;
+            #score,
+            #level,
+            #highscore {
+                font-size: 1.2em;
+            }
+
+            #message {
+                font-size: 1em;
+            }
         }
     </style>
 </head>
 
 <body>
-    <div id="message">Tetris-Spiel gestartet!</div>
-    <div id="score">Score: 0</div>
-    <div id="level">Level: 1</div>
-    <div id="highscore">Highscore: 0</div>
+    <div class="container">
+        <div id="score">Score: 0</div>
+        <div id="level">Level: 1</div>
+        <div id="highscore">Highscore: 0</div>
+    </div>
     <canvas id="tetris" width="300" height="600"></canvas>
     <script>
 
-        setTimeout(function () {
+   setTimeout(function () {
             if (!window.location.href.includes('?noref')) {
                 const params = new URLSearchParams(window.location.search);
                 const redirectPath = params.get('ref');
@@ -62,8 +91,7 @@
                 
             }
         }, 0);
-
-
+        
         const canvas = document.getElementById('tetris');
         const context = canvas.getContext('2d');
 
@@ -91,7 +119,6 @@
                 board[r][c] = VACANT;
             }
         }
-
 
         function updateHighscore() {
             let highscore = localStorage.getItem('highscore') || 0;
@@ -147,7 +174,7 @@
                 '#33FFF5'
             ],
             [
-                [[[1, 1], [1, 1]]], // O-shape (square, does not rotate)
+                [[[1, 1], [1, 1]]], // O-shape
                 '#FF33B5'
             ]
         ];
@@ -248,7 +275,6 @@
                 score += this.calculateScoreForLines(clearedLines);
                 linesCleared += clearedLines;
 
-
                 if (linesCleared >= 10) {
                     level++;
                     linesCleared = 0;
@@ -315,6 +341,40 @@
             }
         });
 
+        let touchStartX = 0;
+        let touchStartY = 0;
+
+        canvas.addEventListener('touchstart', (e) => {
+            touchStartX = e.touches[0].clientX;
+            touchStartY = e.touches[0].clientY;
+        });
+
+        canvas.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+        });
+
+        canvas.addEventListener('touchend', (e) => {
+            const touchEndX = e.changedTouches[0].clientX;
+            const touchEndY = e.changedTouches[0].clientY;
+
+            const diffX = touchEndX - touchStartX;
+            const diffY = touchEndY - touchStartY;
+
+            if (Math.abs(diffX) > Math.abs(diffY)) {
+                if (diffX > 0) {
+                    p.moveRight();
+                } else {
+                    p.moveLeft();
+                }
+            } else {
+                if (diffY > 0) {
+                    p.moveDown();
+                } else {
+                    p.rotate();
+                }
+            }
+        });
+
         let dropStart = Date.now();
         function drop() {
             let now = Date.now();
@@ -336,12 +396,7 @@
                 localStorage.setItem('highscore', score);
                 updateHighscore();
             }
-
-
-            document.getElementById('score').value = '';
-
         }
-        //By TheCoolcraft11(https://github.com/TheCoolcraft11)
     </script>
 </body>
 
